@@ -35,7 +35,7 @@ def get_random_velocity():
     phi = np.random.rand()*2*np.pi
     return np.array(pol2cart(rho,phi))
 
-def get_electron_route():
+def get_electron_route(i):
     x_points_list = [INIT_X]
     y_points_list = [INIT_Y]
     pre_x = INIT_X
@@ -49,6 +49,8 @@ def get_electron_route():
         y_points_list.append(current_y)
         pre_x = current_x
         pre_y = current_y
+
+    print("final time {}: {}".format(i+1,x_points_list[-1]/(NUM_OF_TAUS*TAU)))
     return (x_points_list,y_points_list)
 
 
@@ -58,11 +60,12 @@ def create_routes_and_plot():
 
     for i in range(axes.shape[0]):
         ax = axes[i]
-        (x,y) = get_electron_route()
+        (x,y) = get_electron_route(i)
         # Plot scatter graph
         ax.plot(x, y)
         # Customize the plot (optional)
         ax.set_title("elecrtron {} route".format(i+1))
+        ax.grid()
 
     plt.tight_layout()
     plt.show()
