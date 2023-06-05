@@ -17,7 +17,7 @@ def calc_y_where_only_field (t,v_y,y0):
 
 
 def calc_x_where_only_field (t,v_x,x0):
-    accelerate = (electron_mass**-1)**elementary_charge*E0
+    accelerate = (electron_mass**-1)*elementary_charge*E0
     return  x0+(v_x*t)+(0.5*accelerate)*t**2
 
 def cart2pol(x, y):
@@ -60,7 +60,7 @@ def create_routes_and_plot():
         ax = axes[i]
         (x,y) = get_electron_route()
         # Plot scatter graph
-        ax.scatter(x, y)
+        ax.plot(x, y)
         # Customize the plot (optional)
         ax.set_title("elecrtron {} route".format(i+1))
 
