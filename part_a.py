@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.constants import electron_mass,elementary_charge 
 
+ELECTRON_CHARGE = -elementary_charge
 INIT_TIME = 0
 INIT_X = 0
 INIT_Y = 0
@@ -16,7 +17,7 @@ def calc_y_where_only_field (t,v_y,y0):
 
 
 def calc_x_where_only_field (t,v_x,x0):
-    accelerate = (electron_mass**-1)*elementary_charge*E0
+    accelerate = (electron_mass**-1)*ELECTRON_CHARGE*E0
     return  x0+(v_x*t)+(0.5*accelerate)*t**2
 
 def cart2pol(x, y):
