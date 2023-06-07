@@ -17,7 +17,7 @@ def calc_y_where_only_field (t,v_y,y0):
 
 
 def calc_x_where_only_field (t,v_x,x0):
-    accelerate = (electron_mass**-1)*ELECTRON_CHARGE*E0
+    accelerate = -(electron_mass**-1)*ELECTRON_CHARGE*E0
     return  x0+(v_x*t)+(0.5*accelerate)*t**2
 
 def cart2pol(x, y):
