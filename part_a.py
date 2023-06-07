@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.constants import electron_mass,elementary_charge  
+from scipy.constants import electron_mass,elementary_charge 
 
 INIT_TIME = 0
 INIT_X = 0
@@ -9,7 +9,6 @@ INIT_Y = 0
 NUM_OF_TAUS = 100
 E0 = 30
 TAU = 10**-15
-# DURATION = 100*TAU
 RANDOM_V0_SIZE = 0.002
 
 def calc_y_where_only_field (t,v_y,y0):
@@ -50,7 +49,7 @@ def get_electron_route(i):
         pre_x = current_x
         pre_y = current_y
 
-    print("final time {}: {}".format(i+1,x_points_list[-1]/(NUM_OF_TAUS*TAU)))
+    print("final velocity {}: {}".format(i+1,x_points_list[-1]/(NUM_OF_TAUS*TAU)))
     return (x_points_list,y_points_list)
 
 
