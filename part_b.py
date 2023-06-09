@@ -33,18 +33,10 @@ def get_uniformly_distributed_random_position_in_sphere(radius):
     return x,y, z
 
 def is_in_ball(point,radius):
-    x = point[:,0]
-    y = point[:,1]
-    z = point[:,2]
-
-    return (x**2 + y**2 + z**2)**0.5<radius
+    return (np.sum(point**2))**0.5 < radius
 
 def is_in_sphere(point,radius):
-    x = point[:,0]
-    y = point[:,1]
-    z = point[:,2]
-
-    return (x**2 + y**2 + z**2)**0.5 == radius
+    return (np.sum(point**2))**0.5 == radius
 
 def get_displacement_to_sphere(point,displacement,radius):
     point = point.reshape(3)
