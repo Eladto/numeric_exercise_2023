@@ -85,6 +85,7 @@ def get_electron_position_after_movement(electron_position,other_electron_positi
     return calc_coordinate_movement_by_field(electron_position,np.array((0,0,0)),poition_field,TAU)
     
 
+
 electron_positions = [get_uniformly_distributed_random_position_in_ball(RADIUS) for i in range(N)]
 
 x_positions = [position[0] for position in electron_positions]
@@ -94,20 +95,28 @@ z_positions = [position[2] for position in electron_positions]
 ax = plt.axes(projection='3d')
 ax.scatter(x_positions,y_positions,z_positions, c=z_positions,cmap='viridis', linewidth=0.5)
 plt.show()
-
+not_in_sphere_percentages = []
 for step in range(STEPS):
+    not_in_sphere_counter = 0
     new_electron_positions = []
     for i in range(len(electron_positions)):
         electron_position = np.array(electron_positions[i]).reshape(1,3)
+        not_in_sphere_counter += int(not is_in_sphere(electron_position,RADIUS))
         other_electron_positions = np.array(electron_positions[:i]+electron_positions[i+1:])
         new_electron_position = get_electron_position_after_movement(electron_position,other_electron_positions)
         new_electron_positions.append(new_electron_position.reshape(3))
+    not_in_sphere_percentages.append(not_in_sphere_counter/N)
     electron_positions = new_electron_positions
 
 final_x_positions = [position[0] for position in electron_positions]
 final_y_positions = [position[1] for position in electron_positions]
 final_z_positions = [position[2] for position in electron_positions]
 
-ax = plt.axes(projection='3d')
-ax.scatter(final_x_positions, final_y_positions, final_z_positions, c=final_z_positions,cmap='viridis', linewidth=0.5)
+ax_electron_positions = plt.axes(projection='3d')
+ax_electron_positions.scatter(final_x_positions, final_y_positions, final_z_positions, c=final_z_positions,cmap='viridis', linewidth=0.5)
+plt.show()
+
+ax_electron_percentages =  plt.axes()
+times = np.array(range(STEPS))*TAU
+ax_electron_percentages.scatter(times,not_in_sphere_percentages)
 plt.show()
