@@ -14,7 +14,7 @@ TAU = 10**-3
 STEPS = 1000
 
 
-def vector_size(x,y,z):
+def vector_size(x,y,z): 
     return (x**2 + y**2 + z**2)**0.5
 
 def get_uniformly_distributed_random_position_in_sphere(radius):
@@ -77,8 +77,14 @@ def get_uniformly_distributed_random_position_in_ball(radius):
 def calculate_field_in_point(point,electron_positions):
     dist = scipy.spatial.distance.cdist(electron_positions,point)
     r_vectors = electron_positions+point*-1
-    fields = np.multiply(-K*ELECTRON_CHARGE*r_vectors,np.power(dist,-3))
+    fields = np.multiply(-K*ELECTRON_CHARGE*r_vectors,np.power(dist,-3)) 
     return np.sum(fields,0)
+
+def calculate_potential_in_point(point,electron_positions):
+    dist = scipy.spatial.distance.cdist(electron_positions,point)
+    potentials = np.multiply(-K*ELECTRON_CHARGE,np.power(dist,-1)) 
+    return np.sum(potentials)
+
 
 def get_electron_position_after_movement(electron_position,other_electron_positions):
     poition_field = calculate_field_in_point(electron_position,other_electron_positions)
@@ -112,11 +118,20 @@ final_x_positions = [position[0] for position in electron_positions]
 final_y_positions = [position[1] for position in electron_positions]
 final_z_positions = [position[2] for position in electron_positions]
 
+# show section 1 graph - the distribution of electrons after time
 ax_electron_positions = plt.axes(projection='3d')
 ax_electron_positions.scatter(final_x_positions, final_y_positions, final_z_positions, c=final_z_positions,cmap='viridis', linewidth=0.5)
 plt.show()
 
+# show section 3 graph - the percentage not in sphere as function of time
 ax_electron_percentages =  plt.axes()
 times = np.array(range(STEPS))*TAU
 ax_electron_percentages.scatter(times,not_in_sphere_percentages)
+plt.show()
+
+# show section 4 graph - the potential as function of r
+r_samples = np.array(range(0,100))*0.1
+potentials =  np.array([calculate_potential_in_point(np.array((r,0,0)).reshape(1,3),electron_positions) for r in r_samples])
+ax_r_potentials = plt.axes()
+ax_r_potentials.scatter(r_samples,potentials)
 plt.show()
