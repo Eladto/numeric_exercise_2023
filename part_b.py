@@ -14,6 +14,9 @@ TAU = 10**-3
 STEPS = 1000
 
 
+def vector_size(x,y,z):
+    return (x**2 + y**2 + z**2)**0.5
+
 def get_uniformly_distributed_random_position_in_sphere(radius):
     x = np.random.rand()
     y = np.random.rand()
@@ -23,16 +26,45 @@ def get_uniformly_distributed_random_position_in_sphere(radius):
         y = np.random.rand()
         z = np.random.rand()
     
-    normal = (x**2 + y**2 + z**2)**0.5
-    x = (x/ normal)*radius
-    y = (y/ normal)*radius
-    z = (z/ normal)*radius
+    size = vector_size(x,y,z)
+    x = (x/ size)*radius
+    y = (y/ size)*radius
+    z = (z/ size)*radius
     return x,y, z
 
+def is_in_ball(point,radius):
+    x = point[:,0]
+    y = point[:,1]
+    z = point[:,2]
+
+    return (x**2 + y**2 + z**2)**0.5<radius
+
+def is_in_sphere(point,radius):
+    x = point[:,0]
+    y = point[:,1]
+    z = point[:,2]
+
+    return (x**2 + y**2 + z**2)**0.5 == radius
+
+def get_displacement_to_sphere(point,displacement,radius):
+    point = point.reshape(3)
+    a = (displacement[0]**2+displacement[1]**2+displacement[2]**2)
+    b = 2*np.sum(np.multiply(point,displacement))
+    c = point[0]**2+point[1]**2+point[2]**2-radius**2
+    factor = (-b+(b**2-4*a*c)**0.5)/(2*a)
+    return factor*displacement
 
 def calc_coordinate_movement_by_field (start_position, start_velocity,field,time):
     accelerate = (electron_mass**-1)*ELECTRON_CHARGE*field
-    return  start_position+(start_velocity*time)+(0.5*accelerate)*time**2
+    displacement = (start_velocity*time)+(0.5*accelerate)*time**2
+    point_after_movement = start_position+displacement
+    if (not is_in_ball(point_after_movement,RADIUS)):
+        displacement_to_sphere = get_displacement_to_sphere(start_position,displacement,RADIUS)
+        point_after_movement = start_position + displacement_to_sphere
+    
+    
+
+    return point_after_movement
 
 
 def get_uniformly_distributed_random_position_in_ball(radius):
@@ -53,9 +85,8 @@ def get_uniformly_distributed_random_position_in_ball(radius):
 def calculate_field_in_point(point,electron_positions):
     dist = scipy.spatial.distance.cdist(electron_positions,point)
     r_vectors = electron_positions+point*-1
-    fields = np.multiply(K*ELECTRON_CHARGE*r_vectors,np.power(dist,-3))
-    return np.sum(fields)
-    
+    fields = np.multiply(-K*ELECTRON_CHARGE*r_vectors,np.power(dist,-3))
+    return np.sum(fields,0)
 
 def get_electron_position_after_movement(electron_position,other_electron_positions):
     poition_field = calculate_field_in_point(electron_position,other_electron_positions)
@@ -78,8 +109,8 @@ for step in range(STEPS):
         electron_position = np.array(electron_positions[i]).reshape(1,3)
         other_electron_positions = np.array(electron_positions[:i]+electron_positions[i+1:])
         new_electron_position = get_electron_position_after_movement(electron_position,other_electron_positions)
-        new_electron_positions.append(electron_position)
-    electron_position = new_electron_positions
+        new_electron_positions.append(new_electron_position.reshape(3))
+    electron_positions = new_electron_positions
 
 final_x_positions = [position[0] for position in electron_positions]
 final_y_positions = [position[1] for position in electron_positions]
