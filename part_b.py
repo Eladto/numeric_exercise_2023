@@ -17,20 +17,6 @@ STEPS = 1000
 def vector_size(x,y,z): 
     return (x**2 + y**2 + z**2)**0.5
 
-def get_uniformly_distributed_random_position_in_sphere(radius):
-    x = np.random.rand()
-    y = np.random.rand()
-    z = np.random.rand()
-    while (x == 0 and y ==0 and z == 0):
-        x = np.random.rand()
-        y = np.random.rand()
-        z = np.random.rand()
-    
-    size = vector_size(x,y,z)
-    x = (x/ size)*radius
-    y = (y/ size)*radius
-    z = (z/ size)*radius
-    return x,y, z
 
 def is_in_ball(point,radius):
     return (np.sum(point**2))**0.5 < radius
