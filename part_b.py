@@ -14,15 +14,16 @@ TAU = 10**-3
 STEPS = 1000
 
 
-def vector_size(x,y,z): 
-    return (x**2 + y**2 + z**2)**0.5
-
-
 def is_in_ball(point,radius):
-    return (np.sum(point**2))**0.5 < radius
+    return (np.sum(point**2))**0.5 <= radius
 
 def is_in_sphere(point,radius):
     return (np.sum(point**2))**0.5 == radius
+
+
+def return_to_sphere(point,radius):
+    dist = (np.sum(point**2))**0.5
+    return point*(radius/dist)
 
 def get_displacement_to_sphere(point,displacement,radius):
     point = point.reshape(3)
@@ -37,8 +38,7 @@ def calc_coordinate_movement_by_field (start_position, start_velocity,field,time
     displacement = (start_velocity*time)+(0.5*accelerate)*time**2
     point_after_movement = start_position+displacement
     if (not is_in_ball(point_after_movement,RADIUS)):
-        displacement_to_sphere = get_displacement_to_sphere(start_position,displacement,RADIUS)
-        point_after_movement = start_position + displacement_to_sphere
+        point_after_movement = return_to_sphere(point_after_movement,RADIUS)
     
     
 
