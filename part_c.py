@@ -11,7 +11,7 @@ K = (4*np.pi*epsilon_0)**-1
 RADIUS = 1
 N = 200
 TAU = 10**-3
-STEPS = 1000
+STEPS = 100
 
 
 
@@ -51,8 +51,8 @@ def calc_coordinate_movement_by_field (start_position, start_velocity,field,time
     displacement = (start_velocity*time)+(0.5*accelerate)*time**2
     point_after_movement = start_position+displacement
     if (not is_in_disk(point_after_movement,RADIUS)):
-        displacement_to_sphere = get_displacement_to_circle(start_position,displacement,RADIUS)
-        point_after_movement = start_position + displacement_to_sphere
+        displacement_to_circle = get_displacement_to_circle(start_position,displacement,RADIUS)
+        point_after_movement = start_position + displacement_to_circle
     
     
 
