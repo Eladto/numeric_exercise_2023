@@ -161,6 +161,7 @@ ax.scatter(x_positions,y_positions,z_positions, c=z_positions,cmap='viridis', li
 ax.set_xlabel("x(m)")
 ax.set_ylabel("y(m)")
 ax.set_zlabel("z(m)")
+ax.set_title("Random uniform distribution of electrons")
 plt.show()
 # the percentages of electrons not in the sphere for every step
 not_in_sphere_percentages = []
@@ -186,26 +187,27 @@ ax_electron_positions = plt.axes(projection='3d')
 ax_electron_positions.set_xlabel("x(m)")
 ax_electron_positions.set_ylabel("y(m)")
 ax_electron_positions.set_zlabel("z(m)")
+ax_electron_positions.set_title("Distribution of electrons after 1s")
 ax_electron_positions.scatter(final_x_positions, final_y_positions, final_z_positions, c=final_z_positions,cmap='viridis', linewidth=0.5)
 plt.show()
 
 # show section 3 graph - the percentage not in sphere as function of time
 ax_electron_percentages =  plt.axes()
 times = np.array(range(STEPS))*TAU
-ax_electron_percentages.set_label("Percentages of electrons in the ball as function of time")
 ax_electron_percentages.set_xlabel("time(s)")
 ax_electron_percentages.set_ylabel("percentages")
-ax_electron_percentages.scatter(times,np.array(not_in_sphere_percentages)*100)
+ax_electron_percentages.scatter(times,np.array(not_in_sphere_percentages)*100,s=8)
+ax_electron_percentages.set_title("Percentages of electrons in the ball as function of time")
 plt.show()
 
 # show section 4 graph - the potential as function of r
 r_samples = np.array(range(0,100))*0.1
 potentials =  np.array([calculate_potential_in_point(np.array((r,0,0)).reshape(1,3),electron_positions) for r in r_samples])
 ax_r_potentials = plt.axes()
-ax_r_potentials.set_label("Potential as function of r")
-ax_r_potentials.set_xlabel("time(s)")
+ax_r_potentials.set_title("Potential as function of r")
+ax_r_potentials.set_xlabel("r(m)")
 ax_r_potentials.set_ylabel("potential(v)")
 ax_r_potentials.yaxis.set_major_formatter(scaller_foramtter())
 ax_r_potentials.xaxis.set_major_formatter(scaller_foramtter())
-ax_r_potentials.scatter(r_samples,potentials)
+ax_r_potentials.scatter(r_samples,potentials,s=8)
 plt.show()
