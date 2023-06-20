@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 from scipy.constants import electron_mass,elementary_charge,epsilon_0
 import scipy
 from mpl_toolkits import mplot3d
@@ -11,19 +12,42 @@ K = (4*np.pi*epsilon_0)**-1
 RADIUS = 1
 N = 200
 TAU = 10**-3
-STEPS = 100
+STEPS = 1000
 
 
 
 def is_in_disk(point,radius):
-    return (np.sum(point**2))**0.5 < radius
+    """
+    Args:
+        point: point array
+        radius (float): radius of ball
+
+    Returns:
+        True if the point in the radius of disk, either False
+    """
+    return (np.sum(point**2))**0.5 <= radius
 
 
-def is_in_circle(point,radius):
+def is_on_circle(point,radius):
+    """
+    Args:
+        point: point array
+        radius (float): radius of sphere
+
+    Returns:
+        True if the point on the circle, either False
+    """
     return (np.sum(point**2))**0.5 == radius
 
 
 def get_uniformly_distributed_random_position_in_disk(radius):
+    """
+    Args:
+        radius (float): radius of ball
+
+    Returns:
+        Uniformly distributed random array position in disk
+    """
     # get point in a square
     x = np.random.rand()*radius*2-radius
     y = np.random.rand()*radius*2-radius
@@ -36,39 +60,50 @@ def get_uniformly_distributed_random_position_in_disk(radius):
         dist_from_origin = (x**2 + y**2)**0.5
     return (x,y)
 
-def get_displacement_to_circle(point,displacement,radius):
-    point = point.reshape(2)
-    a = (displacement[0]**2+displacement[1]**2)
-    b = 2*np.sum(np.multiply(point,displacement))
-    c = point[0]**2+point[1]**2-radius**2
-    factor = (-b+(b**2-4*a*c)**0.5)/(2*a)
-    return factor*displacement
+def return_to_circle(point,radius):
+    """Normalize the point, so it will be on the circle
+
+    Args:
+        point: point array
+        radius (float): radius of sphere
+
+    Returns:
+        Point on the angle(in polarized coordinates), but on the circle 
+    """
+    dist = (np.sum(point**2))**0.5
+    return point*(radius/dist)
 
 
 
 def calc_coordinate_movement_by_field (start_position, start_velocity,field,time):
+    """Calculate movement of electron
+
+    Args:
+        start_position : start position of electron
+        start_velocity : start velocity of electron
+        field : field vector in the position of electron
+        time : time passed in this step
+
+    Returns:
+        array with the position of electron after movement
+    """
     accelerate = (electron_mass**-1)*ELECTRON_CHARGE*field
     displacement = (start_velocity*time)+(0.5*accelerate)*time**2
     point_after_movement = start_position+displacement
     if (not is_in_disk(point_after_movement,RADIUS)):
-        displacement_to_circle = get_displacement_to_circle(start_position,displacement,RADIUS)
-        point_after_movement = start_position + displacement_to_circle
-    
-    
-
+        point_after_movement = return_to_circle(point_after_movement,RADIUS)
     return point_after_movement
-
-electron_positions = [get_uniformly_distributed_random_position_in_disk(RADIUS) for i in range(N)]
-
-x_positions = [position[0] for position in electron_positions]
-y_positions = [position[1] for position in electron_positions]
-
-ax = plt.axes()
-ax.scatter(x_positions,y_positions)
-plt.show()
 
 
 def calculate_field_in_point(point,electron_positions):
+    """
+    Args:
+        point : Vector of position
+        electron_positions : Vectors of the positions of other electrons
+
+    Returns:
+        Field vector in position 
+    """
     dist = scipy.spatial.distance.cdist(electron_positions,point)
     r_vectors = electron_positions+point*-1
     fields = np.multiply(-K*ELECTRON_CHARGE*r_vectors,np.power(dist,-3)) 
@@ -76,9 +111,45 @@ def calculate_field_in_point(point,electron_positions):
 
 
 def get_electron_position_after_movement(electron_position,other_electron_positions):
-    poition_field = calculate_field_in_point(electron_position,other_electron_positions)
-    return calc_coordinate_movement_by_field(electron_position,np.array((0,0)),poition_field,TAU)
-    
+    """
+
+    Args:
+        electron_position: vector of electron position
+        other_electron_positions : vector of the other electron positions
+
+    Returns:
+        electron position after movement, using the field calculated by the other electrons
+    """
+    position_field = calculate_field_in_point(electron_position,other_electron_positions)
+    return calc_coordinate_movement_by_field(electron_position,np.array((0,0)),position_field,TAU)
+
+def get_electrons_density(electron_positions, bins):
+    dist = np.sum(np.array(electron_positions)**2,1)**0.5
+    return np.histogram(dist,bins)
+
+
+def scaller_foramtter():
+    # Create a ScalarFormatter with the desired format
+    formatter = ticker.ScalarFormatter(useMathText=True)
+    formatter.set_powerlimits((-3, 3))
+    formatter.set_scientific(True)
+    return formatter
+
+
+electron_positions = [get_uniformly_distributed_random_position_in_disk(RADIUS) for i in range(N)]
+
+x_positions = [position[0] for position in electron_positions]
+y_positions = [position[1] for position in electron_positions]
+
+# show section 1 graph - the distribution of electrons at the beginning
+
+
+ax = plt.axes()
+ax.scatter(x_positions,y_positions,s=12)
+ax.set_xlabel("x(m)")
+ax.set_ylabel("y(m)")
+ax.set_title("Random uniform distribution of electrons")
+plt.show()
 
 
 for step in range(STEPS):
@@ -96,5 +167,20 @@ final_y_positions = [position[1] for position in electron_positions]
 
 # show section 1 graph - the distribution of electrons after time
 ax_electron_positions = plt.axes()
-ax_electron_positions.scatter(final_x_positions, final_y_positions)
+ax_electron_positions.scatter(final_x_positions, final_y_positions,s=12)
+ax_electron_positions.set_xlabel("x(m)")
+ax_electron_positions.set_ylabel("y(m)")
+ax_electron_positions.set_title("Distribution of electrons after 1s")
+plt.show()
+
+# show section 3 graph - the density of electrons
+electron_density,radius = get_electrons_density(electron_positions,np.arange(6)*0.2)
+area_by_radius = np.pi*radius**2
+ring_area = area_by_radius[1:] -  area_by_radius[:-1]
+ax_density = plt.axes()
+ax_density.set_title("Density as function of r")
+ax_density.set_xlabel("r(m)")
+ax_density.set_ylabel("density(c/m^2)")
+ax_density.scatter(radius[1:]-0.1,electron_density*ELECTRON_CHARGE/ring_area,s=8)
+ax_density.yaxis.set_major_formatter(scaller_foramtter())
 plt.show()
