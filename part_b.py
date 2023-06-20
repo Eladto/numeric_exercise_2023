@@ -12,7 +12,7 @@ K = (4*np.pi*epsilon_0)**-1
 RADIUS = 1
 N = 200
 TAU = 10**-3
-STEPS = 20
+STEPS = 1000
 
 
 def is_in_ball(point,radius):
