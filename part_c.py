@@ -135,6 +135,9 @@ def scaller_foramtter():
     formatter.set_scientific(True)
     return formatter
 
+def analytic_solution(r1,jump):
+    r2 = r1+jump
+    return ((-3.2*10**-17)/np.pi)*((1-r1**2)**0.5-(1-r2**2)**0.5)/(r2**2-r1**2)
 
 electron_positions = [get_uniformly_distributed_random_position_in_disk(RADIUS) for i in range(N)]
 
@@ -174,13 +177,15 @@ ax_electron_positions.set_title("Distribution of electrons after 1s")
 plt.show()
 
 # show section 3 graph - the density of electrons
-electron_density,radius = get_electrons_density(electron_positions,np.arange(6)*0.2)
+electron_density,radius = get_electrons_density(electron_positions,np.arange(11)*0.1)
 area_by_radius = np.pi*radius**2
 ring_area = area_by_radius[1:] -  area_by_radius[:-1]
 ax_density = plt.axes()
 ax_density.set_title("Density as function of r")
 ax_density.set_xlabel("r(m)")
 ax_density.set_ylabel("density(c/m^2)")
-ax_density.scatter(radius[1:]-0.1,electron_density*ELECTRON_CHARGE/ring_area,s=8)
+
+ax_density.scatter(np.arange(10)*0.1,electron_density*ELECTRON_CHARGE/ring_area,s=8,c="green")
+ax_density.plot(np.arange(10)*0.1,list(map(lambda x: analytic_solution(x,0.1),list(np.arange(10)*0.1))),'.--')
 ax_density.yaxis.set_major_formatter(scaller_foramtter())
 plt.show()
