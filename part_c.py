@@ -123,7 +123,7 @@ def get_electron_position_after_movement(electron_position,other_electron_positi
     position_field = calculate_field_in_point(electron_position,other_electron_positions)
     return calc_coordinate_movement_by_field(electron_position,np.array((0,0)),position_field,TAU)
 
-def get_elget_electrons_densityectrons_density(electron_positions, bins):
+def get_electrons_densityectrons_density(electron_positions, bins):
     """_summary_
 
     Args:
