@@ -123,7 +123,16 @@ def get_electron_position_after_movement(electron_position,other_electron_positi
     position_field = calculate_field_in_point(electron_position,other_electron_positions)
     return calc_coordinate_movement_by_field(electron_position,np.array((0,0)),position_field,TAU)
 
-def get_electrons_density(electron_positions, bins):
+def get_elget_electrons_densityectrons_density(electron_positions, bins):
+    """_summary_
+
+    Args:
+        electron_positions : The positions of electrons
+        bins : The disks radiuses to count electrons on
+
+    Returns:
+        tuple: The count of electrons on every radius, radiuses
+    """
     dist = np.sum(np.array(electron_positions)**2,1)**0.5
     return np.histogram(dist,bins)
 
@@ -136,6 +145,15 @@ def scaller_foramtter():
     return formatter
 
 def analytic_solution(r1,jump):
+    """
+
+    Args:
+        r1 (float): the lower radius of disk
+        jump (float): the difference between the radiuses of disk
+
+    Returns:
+        the density of charge by the analytic solution
+    """
     r2 = r1+jump
     return ((-3.2*10**-17)/np.pi)*((1-r1**2)**0.5-(1-r2**2)**0.5)/(r2**2-r1**2)
 
